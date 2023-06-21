@@ -42,6 +42,17 @@ app.get("/urls.json", (req, res) => {
     res.render("urls_show", templateVars);
   });
 
+
+//Redirect any request to "/u/:id" to its longURL
+
+app.get("/u/:id", (req, res) => {
+    const longURL = "http://www.lighthouselabs.ca";
+    res.redirect(longURL);
+  });
+
+ 
+
+
   app.get("/hello", (req, res) => {
     res.send("<html><body>Hello <b>World</b></body></html>\n");
   });
@@ -61,7 +72,7 @@ app.get("/urls.json", (req, res) => {
 //     res.send("Ok"); // Respond with 'Ok' (we will replace this)
 //   });
 
-
+//Redirect After Form Submission
 app.post("/urls", (req, res) => {
     if (req.session.user_id) {
       const shortURL = generateRandomString();
