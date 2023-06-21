@@ -3,6 +3,14 @@ const app = express();
 const PORT = 8080; // default port 8080
 
 
+//Generate a Random Short URL ID
+
+function generateRandomString(length) {
+    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
+}
+console.log(generateRandomString(6));
+
+
 app.set("view engine", "ejs");
 
 const urlDatabase = {
