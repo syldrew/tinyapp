@@ -14,6 +14,9 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+//Getting Ready for POST Requests
+app.use(express.urlencoded({ extended: true }));
+
 //******* Add a route for /urls*******
 app.get("/urls.json", (req, res) => {
     res.json(urlDatabase);
