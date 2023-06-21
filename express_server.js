@@ -56,10 +56,27 @@ app.get("/urls.json", (req, res) => {
 
   //Add a POST Route to Receive the Form Submission
 
-  app.post("/urls", (req, res) => {
-    console.log(req.body); // Log the POST request body to the console
-    res.send("Ok"); // Respond with 'Ok' (we will replace this)
+//   app.post("/urls", (req, res) => {
+//     console.log(req.body); // Log the POST request body to the console
+//     res.send("Ok"); // Respond with 'Ok' (we will replace this)
+//   });
+
+
+app.post("/urls", (req, res) => {
+    if (req.session.user_id) {
+      const shortURL = generateRandomString();
+      urlDatabase[shortURL] = {
+        longURL: req.body.longURL,
+        userID: req.session.user_id,
+      };
+      res.redirect(`/urls/${shortURL}`);
+    } else {
+      res.status(401).send("You must be logged in to a valid account to create short URLs.");
+    }
   });
+
+
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
