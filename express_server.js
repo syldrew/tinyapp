@@ -46,6 +46,13 @@ app.get("/urls.json", (req, res) => {
     res.render("urls_index", templateVars);
   });
 
+  //Add a POST Route to Receive the Form Submission
+
+  app.post("/urls", (req, res) => {
+    console.log(req.body); // Log the POST request body to the console
+    res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  });
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
