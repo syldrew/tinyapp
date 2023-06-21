@@ -20,6 +20,11 @@ app.get("/urls.json", (req, res) => {
   });
 
 
+  //Add a GET Route to Show the Form
+  app.get("/urls/new", (req, res) => {
+    res.render("urls_new");
+  });
+
   //Adding a Second Route and Template
   app.get("/urls/:id", (req, res) => {
     const templateVars = { id: req.params.id, longURL: "http://www.lighthouselabs.ca"};
