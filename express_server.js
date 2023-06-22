@@ -1,7 +1,8 @@
 const express = require("express");
-const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080; 
 
+
+const app = express();
 
 //Generate a Random Short URL ID
 
@@ -11,16 +12,13 @@ function generateRandomString(length) {
 console.log(generateRandomString(6));
 
 
-app.set("view engine", "ejs");
-
-const urlDatabase = {
+const urlDatabase = { 
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
+
+app.set("view engine", "ejs");
 
 //Getting Ready for POST Requests
 app.use(express.urlencoded({ extended: true }));
@@ -30,10 +28,19 @@ app.use(express.urlencoded({ extended: true }));
 
                                                     //****GETS ****/
 
-//******* Add a route for /urls*******
-app.get("/urls.json", (req, res) => {
-    res.json(urlDatabase);
-  });
+
+app.get("/", (req, res) => { //*********/
+res.send("Hello!");
+});
+
+
+// //******* Add a route for /urls*******
+// app.get("/urls.json", (req, res) => { //******/
+//     res.json(urlDatabase);
+//   });
+
+
+
 
 
   //Add a GET Route to Show the Form
@@ -41,26 +48,44 @@ app.get("/urls.json", (req, res) => {
     res.render("urls_new");
   });
 
-  //Adding a Second Route and Template
-  app.get("/urls/:id", (req, res) => {
-    const templateVars = { id: req.params.id, longURL: "http://www.lighthouselabs.ca"};
-    res.render("urls_show", templateVars);
-  });
 
 
-//Redirect any request to "/u/:id" to its longURL
 
-app.get("/u/:id", (req, res) => {
-    const longURL = "http://www.lighthouselabs.ca";
+//   //Adding a Second Route and Template
+//   app.get("/urls/:id", (req, res) => {
+//     const templateVars = { id: req.params.id, longURL: "http://www.lighthouselabs.ca"};
+//     res.render("urls_show", templateVars);
+//   });
+
+app.get("/urls/:shortURL", (req, res) => {
+    let templateVars = {
+        shortURL: req.params.shortURL,
+        longURL: urlDatabase[req.params.shortURL].longURL,
+        };
+        res.render("urls_show", templateVars);
+});
+
+
+
+
+// //Redirect any request to "/u/:id" to its longURL
+
+// app.get("/u/:id", (req, res) => {
+//     const longURL = "http://www.lighthouselabs.ca";
+//     res.redirect(longURL);
+//   });
+
+//urlDatabase[req.params.shortURL].longURL;
+app.get("/u/:shortURL", (req, res) => {
+    const longURL = "http://www.lighthouselabs.ca"; /**giving me  */
     res.redirect(longURL);
-  });
-
+});
  
 
 
-  app.get("/hello", (req, res) => {
-    res.send("<html><body>Hello <b>World</b></body></html>\n");
-  });
+//   app.get("/hello", (req, res) => {
+//     res.send("<html><body>Hello <b>World</b></body></html>\n");
+//   });
 
 
 //Sending Data to urls_index.ejs
@@ -84,16 +109,16 @@ app.get("/u/:id", (req, res) => {
 
 //Redirect After Form Submission
 app.post("/urls", (req, res) => {
-    if (req.session.user_id) {
+   // if (req.session.user_id) {
       const shortURL = generateRandomString();
       urlDatabase[shortURL] = {
         longURL: req.body.longURL,
-        userID: req.session.user_id,
+       // userID: req.session.user_id,
       };
       res.redirect(`/urls/${shortURL}`);
-    } else {
-      res.status(401).send("You must be logged in to a valid account to create short URLs.");
-    }
+   // } else {
+     // res.status(401).send("You must be logged in to a valid account to create short URLs.");
+    //}
   });
 
 //Add a POST route that removes a URL resource: POST /urls/:id/delete
@@ -109,7 +134,7 @@ app.post("/urls", (req, res) => {
 // stored long URL based on the new value in req.body.
 // Finally, redirect the client back to /urls.
   app.post("/urls/:id", (req, res) => {
-      const shortURL = req.params.shortURL;
+    const shortURL = req.params.id;
       urlDatabase[shortURL].longURL = req.body.newURL;
       res.redirect('/urls');
   });
