@@ -20,48 +20,50 @@
 
 
 
-  <body>
+<body>
     <%- include('partials/_header') %>
+
+
     <main style="margin: 1em;">
-      <h3>My URLs</h3>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Short URL ID</th>
-            <th scope="col">Long URL</th>
-            <th scope="col">Edit</th>
-            <th scope="col">Delete</th>
-          </tr>
-        </thead>
+        <h3>My URLs</h3>
+        <table class="table">
+             <thead>
+               <tr>
+                 <th scope="col">Short URL ID</th>
+                 <th scope="col">Long URL</th>
+                 <th scope="col">Edit</th>
+                 <th scope="col">Delete</th>
+               </tr>
+             </thead>
 
         <tbody>
-          <% for (let id in urls) { %> <!--******-->
+                  <% for(let url in urls) { %> 
             <tr>
-              <td><%= id %></td>
-              <td><%= urls[id] %></td>
+                  <td><%= url %></td>
+                  <td><%= urls[url].longURL %></td>
 
 
 
            
-<!--Add an Edit column to the table on the urls_index page. In this column, 
-    have an Edit link appear next to each URL that takes you to the appropriate urls_show page.-->
-              <td>
-                <a href="/urls/<%= id %>">
-                  <button type="button" class="btn btn-outline-primary">Edit</button>
-                </a>
-              </td>
+                     <!--Add an Edit column to the table on the urls_index page. In this column, 
+                      have an Edit link appear next to each URL that takes you to the appropriate urls_show page.-->
+                  <td>
+                        <a href="/urls/<%= url %>">
+                               <button type="button" class="btn btn-outline-primary">Edit</button>
+                        </a>
+                  </td>
 
 
               
-  <!--Add delete buttons to each URL object in the index page-->
-            <td>
-            <form method="POST" action="/urls/9sm5xK/delete">
-                <button type="submit" class="btn btn-outline-danger">Delete</button>
-            </form>
-            </td>
+                       <!--Add delete buttons to each URL object in the index page-->
+                  <td>
+                         <form method="POST" action="/urls/<%= url %>/delete">
+                                <button type="submit" class="btn btn-outline-danger">Delete</button>
+                         </form>
+                  </td>
            </tr>
-        
-        <% } %>
+           <% } %>
+           
         </tbody>
       </table>
     </main>
