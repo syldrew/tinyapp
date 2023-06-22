@@ -25,6 +25,11 @@ app.get("/", (req, res) => {
 //Getting Ready for POST Requests
 app.use(express.urlencoded({ extended: true }));
 
+
+
+
+                                                    //****GETS ****/
+
 //******* Add a route for /urls*******
 app.get("/urls.json", (req, res) => {
     res.json(urlDatabase);
@@ -65,6 +70,11 @@ app.get("/u/:id", (req, res) => {
     res.render("urls_index", templateVars);
   });
 
+
+                                                          //****POSTS ****/
+
+
+
   //Add a POST Route to Receive the Form Submission
 
 //   app.post("/urls", (req, res) => {
@@ -86,7 +96,11 @@ app.post("/urls", (req, res) => {
     }
   });
 
-
+  app.post("/urls/:shortURL/delete", (req, res) => {
+      const shortURL = req.params.shortURL;
+      delete urlDatabase[shortURL];
+      res.redirect('/urls'); 
+  });
 
 
 app.listen(PORT, () => {
