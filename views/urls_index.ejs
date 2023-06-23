@@ -40,7 +40,7 @@
                   <% for(let url in urls) { %> 
             <tr>
                   <td><%= url %></td>
-                  <td><%= urls[url] %></td>
+                  <td><%= urls[url].longURL %></td>
 
 
 
@@ -65,7 +65,14 @@
            <% } %>
            
         </tbody>
+        
       </table>
+      <% if (user) { %>
+        <div class="alert alert-info" role="alert">
+          Create a <a href="/urls/new" class="alert-info"><b>New Short URL</b></a>
+        </div>
+      <% } %>
+
     </main>
 
 
