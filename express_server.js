@@ -50,6 +50,12 @@ res.send("Hello!");
 
 
 
+  app.get("/login", (req, res) => {
+   
+      res.redirect("/urls");
+   
+  });
+
 
 //   //Adding a Second Route and Template
 //   app.get("/urls/:id", (req, res) => {
@@ -139,6 +145,13 @@ app.post("/urls", (req, res) => {
       res.redirect('/urls');
   });
 
+
+
+  //Add an endpoint to handle a POST to /login in your Express server.
+  app.post("/login", (req, res) => {
+
+    res.redirect("/urls");
+  });
 
 
 app.listen(PORT, () => {

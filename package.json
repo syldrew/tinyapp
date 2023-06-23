@@ -1,28 +1,28 @@
 {
-  "name": "tinyapp",
-  "version": "1.0.0",
-  "description": "",
-  "main": "express_server.js",
-  "scripts": {
-    "start": "./node_modules/.bin/nodemon -L express_server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/syldrew/tinyapp.git"
-  },
-  "keywords": [],
-  "author": "Silvia Chavez Meza syl_peke14@hotmail.com",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/syldrew/tinyapp/issues"
-  },
-  "homepage": "https://github.com/syldrew/tinyapp#readme",
-  "dependencies": {
-    "ejs": "^3.1.9",
-    "express": "^4.18.2"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.22"
+    "name": "tinyapp",
+    "version": "1.0.0",
+    "description": "",
+    "main": "express_server.js",
+    "scripts": {
+      "start": "./node_modules/.bin/nodemon -L express_server.js",
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/syldrew/tinyapp.git"
+    },
+    "keywords": [],
+    "author": "Silvia Chavez Meza syl_peke14@hotmail.com",
+    "license": "ISC",
+    "bugs": {
+      "url": "https://github.com/syldrew/tinyapp/issues"
+    },
+    "homepage": "https://github.com/syldrew/tinyapp#readme",
+    "dependencies": {
+      "ejs": "^3.1.9",
+      "express": "^4.18.2"
+    },
+    "devDependencies": {
+      "nodemon": "^2.0.22"
+    }
   }
-}
