@@ -1,6 +1,5 @@
 const express = require("express");
-const cookieParser = require('cookie-parser');
-
+const cookieSession = require("cookie-session");
 const app = express();
 const PORT = 8080; 
 
@@ -47,38 +46,50 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const users = {};
+
+//Create a users Object 
+const users = {
+    userRandomID: {
+      id: "userRandomID",
+      email: "user@example.com",
+      password: "purple-monkey-dinosaur",
+    },
+    user2RandomID: {
+      id: "user2RandomID",
+      email: "user2@example.com",
+      password: "dishwasher-funk",
+    },
+  };
+  
 
 app.set("view engine", "ejs");
 
 //Getting Ready for POST Requests
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cookieParser({
-}));
-
+app.use(cookieSession({
+    name: 'session',
+    keys: ['SILVIA'],
+    maxAge: 24 * 60 * 60 * 1000,
+  }));
 
                                                     //****GETS ****/
 
 
-app.get("/", (req, res) => { //*********/
-res.send("Hello!");
-});
-
-
 app.get("/", (req, res) => {
-    if (cookieHasUser(users)) {
+    if (cookieHasUser(req.session.user_id, users)) {
       res.redirect("/urls");
     } else {
       res.redirect("/login");
     }
   });
+  
 
 
   app.get("/urls", (req, res) => {
     let templateVars = {
-      urls: urlsForUser(req.session, urlDatabase),
-      user: users[req.session],
+      urls: urlsForUser(req.session.user_id, urlDatabase),
+      user: users[req.session.user_id],
     };
     res.render("urls_index", templateVars);
   });
@@ -96,55 +107,57 @@ app.get("/", (req, res) => {
 
   //Add a GET Route to Show the Form
   app.get("/urls/new", (req, res) => {
-    if (!cookieHasUser(req.session, users)) {
+    if (!cookieHasUser(req.session.user_id, users)) {
       res.redirect("/login");
     } else {
       let templateVars = {
-        user: users[req.session],
+        user: users[req.session.user_id],
       };
       res.render("urls_new", templateVars);
     }
   });
+  
 
 //Create a Registration Page. Create a GET /register endpoint, which returns the template you just created. 
-  app.get("/register", (req, res) => {
-    if (cookieHasUser(req.session,users)) {
+app.get("/register", (req, res) => {
+    if (cookieHasUser(req.session.user_id, users)) {
       res.redirect("/urls");
     } else {
       let templateVars = {
-        user: users[req.session],
+        user: users[req.session.user_id],
       };
       res.render("urls_registration", templateVars);
     }
   });
 
   app.get("/login", (req, res) => {
-    if (cookieHasUser(req.session, users)) {
+    if (cookieHasUser(req.session.user_id, users)) {
       res.redirect("/urls");
     } else {
       let templateVars = {
-        user: users[req.session],
+        user: users[req.session.user_id],
       };
       res.render("urls_login", templateVars);
     }
   });
+  
 
 
 
 //Adding a Second Route and Template
 app.get("/urls/:shortURL", (req, res) => {
-  if (urlDatabase[req.params.shortURL]) {
-    let templateVars = {
-      shortURL: req.params.shortURL,
-      longURL: urlDatabase[req.params.shortURL].longURL,
-      urlUserID: urlDatabase[req.params.shortURL].userID,
-      user: users[req.session],
-    };
-    res.render("urls_show", templateVars);
-  } else {
-    res.status(404).send("The short URL you entered does not correspond with a long URL at this time.");
-  }
-});
+    if (urlDatabase[req.params.shortURL]) {
+      let templateVars = {
+        shortURL: req.params.shortURL,
+        longURL: urlDatabase[req.params.shortURL].longURL,
+        urlUserID: urlDatabase[req.params.shortURL].userID,
+        user: users[req.session.user_id],
+      };
+      res.render("urls_show", templateVars);
+    } else {
+      res.status(404).send("The short URL you entered does not correspond with a long URL at this time.");
+    }
+  });
 
 
 
@@ -163,6 +176,7 @@ app.get("/u/:shortURL", (req, res) => {
       res.status(404).send("The short URL you are trying to access does not correspond with a long URL at this time.");
     }
   });
+  
 
 
 
@@ -175,11 +189,11 @@ app.get("/u/:shortURL", (req, res) => {
 
 //Redirect After Form Submission
 app.post("/urls", (req, res) => {
-    if (req.session) {
+    if (req.session.user_id) {
       const shortURL = generateRandomString();
       urlDatabase[shortURL] = {
         longURL: req.body.longURL,
-        userID: req.session,
+        userID: req.session.user_id,
       };
       res.redirect(`/urls/${shortURL}`);
     } else {
@@ -187,16 +201,10 @@ app.post("/urls", (req, res) => {
     }
   });
   
+  
 
 
 //Add an endpoint to handle a POST to /login in your Express server.
-  app.post("/login", (req, res) => {
-        req.session = userID;
-        res.redirect("/urls");
-      });
-      
-     
-     
  app.post("/logout", (req, res) => {
         req.session = null;
         res.redirect('/urls');
@@ -206,23 +214,23 @@ app.post("/urls", (req, res) => {
 
 //Add a POST route that removes a URL resource: POST /urls/:id/delete
 
-  app.post("/urls/:shortURL/delete", (req, res) => {
-  const userID = req.session;
-  const userUrls = urlsForUser(userID, urlDatabase);
-  if (Object.keys(userUrls).includes(req.params.shortURL)) {
-    const shortURL = req.params.shortURL;
-    delete urlDatabase[shortURL];
-    res.redirect('/urls');
-  } else {
-    res.status(401).send("You do not have authorization to delete this short URL.");
-  }
-});
+app.post("/urls/:shortURL/delete", (req, res) => {
+    const userID = req.session.user_id;
+    const userUrls = urlsForUser(userID, urlDatabase);
+    if (Object.keys(userUrls).includes(req.params.shortURL)) {
+      const shortURL = req.params.shortURL;
+      delete urlDatabase[shortURL];
+      res.redirect('/urls');
+    } else {
+      res.status(401).send("You do not have authorization to delete this short URL.");
+    }
+  });
 
 //Add a POST route that updates a URL resource; POST /urls/:id and have it update the value of your
 // stored long URL based on the new value in req.body.
 // Finally, redirect the client back to /urls.
 app.post("/urls/:id", (req, res) => {
-    const userID = req.session;
+    const userID = req.session.user_id;
     const userUrls = urlsForUser(userID, urlDatabase);
     if (Object.keys(userUrls).includes(req.params.id)) {
       const shortURL = req.params.id;
@@ -233,8 +241,9 @@ app.post("/urls/:id", (req, res) => {
     }
   });
 
-
-  
+  app.get("/", (req, res) => { //*********/
+    res.send("Hello!");
+    });
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
@@ -280,3 +289,8 @@ app.listen(PORT, () => {
 //     console.log(req.body); // Log the POST request body to the console
 //     res.send("Ok"); // Respond with 'Ok' (we will replace this)
 //   });
+
+//app.post("/login", (req, res) => {
+//     req.session.user_id = userID;
+//     res.redirect("/urls");
+//       });
