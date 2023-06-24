@@ -37,42 +37,35 @@
              </thead>
 
         <tbody>
-                  <% for(let url in urls) { %> 
-            <tr>
-                  <td><%= url %></td>
-                  <td><%= urls[url].longURL %></td>
-
-
-
-           
-                     <!--Add an Edit column to the table on the urls_index page. In this column, 
-                      have an Edit link appear next to each URL that takes you to the appropriate urls_show page.-->
-                  <td>
-                        <a href="/urls/<%= url %>">
-                               <button type="button" class="btn btn-outline-primary">Edit</button>
-                        </a>
-                  </td>
-
-
-              
-                       <!--Add delete buttons to each URL object in the index page-->
-                  <td>
-                         <form method="POST" action="/urls/<%= url %>/delete">
-                                <button type="submit" class="btn btn-outline-danger">Delete</button>
-                         </form>
-                  </td>
-           </tr>
-           <% } %>
-           
-        </tbody>
-        
-      </table>
-      <% if (user) { %>
-        <div class="alert alert-info" role="alert">
-          Create a <a href="/urls/new" class="alert-info"><b>New Short URL</b></a>
-        </div>
-      <% } %>
-
+            <% if (!user) { %>
+                <div class="alert alert-warning" role="alert">
+                    Please <a href="/login" class="alert-link">login</a> or <a href="/register" class="alert-link">register</a> 
+                </div>
+              <% } else { %>
+              <% for(let url in urls) { %>
+              <tr>
+                <td><%= url %></td>
+                <td><%= urls[url].longURL %></td>
+                <td>
+                  <a href="/urls/<%= url %>">
+                    <button type="button" class="btn btn-outline-primary">Edit</button>
+                  </a>
+                </td>
+                <td>
+                  <form method="POST" action="/urls/<%= url %>/delete">
+                  <button type="submit" class="btn btn-outline-danger">Delete</button>
+                  </form>
+                </td>
+              </tr>
+              <% } %>
+              <% } %>
+            </tbody>
+          </table>
+          <% if (user) { %>
+            <div class="alert alert-info" role="alert">
+              Create a <a href="/urls/new" class="alert-info"><b>New Short URL</b></a>
+            </div>
+          <% } %>
     </main>
 
 
