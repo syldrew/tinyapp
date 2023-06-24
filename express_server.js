@@ -94,7 +94,6 @@ app.get("/", (req, res) => {
   });  
 
 
-  
   //Add a GET Route to Show the Form
   app.get("/urls/new", (req, res) => {
     if (!cookieHasUser(req.session, users)) {
@@ -107,6 +106,17 @@ app.get("/", (req, res) => {
     }
   });
 
+//Create a Registration Page. Create a GET /register endpoint, which returns the template you just created. 
+  app.get("/register", (req, res) => {
+    if (cookieHasUser(req.session,users)) {
+      res.redirect("/urls");
+    } else {
+      let templateVars = {
+        user: users[req.session],
+      };
+      res.render("urls_registration", templateVars);
+    }
+  });
 
   app.get("/login", (req, res) => {
     if (cookieHasUser(req.session, users)) {
@@ -222,6 +232,9 @@ app.post("/urls/:id", (req, res) => {
       res.status(401).send("You do not have authorization to edit this short URL.");
     }
   });
+
+
+  
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
