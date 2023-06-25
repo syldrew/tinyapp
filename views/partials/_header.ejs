@@ -21,14 +21,21 @@
 
   
       <!--In the _header.ejs partial of your app, create a <form> that POSTs to /login.-->
-       
-     
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-              <a class="nav-item nav-link" href="/login" style="margin: 1em">Login</a>
-              <a class="nav-item nav-link" href="/register" style="margin: 1em">Register</a>
+        <% if (user) { %> 
+            <form method="POST" action="/logout" class="form-inline">
+              <div class="form-group form-inline">
+                <label>Logged In As: <%= user.email %></label>
+                <button type="submit" class="btn btn-outline-dark" style="margin: 1em">Logout</button>
+              </div>
+            </form>
+          <% } else { %>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
+              <div class="navbar-nav">
+                <a class="nav-item nav-link" href="/login" style="margin: 1em">Login</a>
+                <a class="nav-item nav-link" href="/register" style="margin: 1em">Register</a>
+              </div>
             </div>
-          </div>
+            <% } %>
         </nav>
   </header>
   
