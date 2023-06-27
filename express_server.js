@@ -60,6 +60,10 @@ const urlsForUser = function(id, urlDatabase) {
     return userUrls;
   };
 
+
+
+ 
+
 //***********************************************************************************************************/
                                                    // Express and Routes
 
@@ -148,7 +152,6 @@ app.get("/u/:shortURL", (req, res) => {
   });
 
 
-//********************************************* */
 
   app.post("/urls", (req, res) => {
     if (req.session.user_id) {
@@ -175,48 +178,40 @@ app.get("/u/:shortURL", (req, res) => {
     res.redirect("/urls");
     });
 
-
-
-
-
-
-
-
-
-
-
-
-    
- app.post("/logout", (req, res) => {
+    app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+      res.redirect("/urls");
+    });
+  
+    app.post("/logout", (req, res) => {
         req.session = null;
-        res.redirect('/urls');
+        res.redirect("/login");
       });
 
+    app.post("/urls/:shortURL/delete", (req, res) => {
+        const userID = req.session.user_id;
+        const userUrls = urlsForUser(userID, urlDatabase);
+        if (Object.keys(userUrls).includes(req.params.shortURL)) {
+          const shortURL = req.params.shortURL;
+          delete urlDatabase[shortURL];
+          res.redirect('/urls');
+        } else {
+          res.status(401).send("You do not have authorization to delete this short URL.");
+        }
+      });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
-    const userID = req.session.user_id;
-    const userUrls = urlsForUser(userID, urlDatabase);
-    if (Object.keys(userUrls).includes(req.params.shortURL)) {
-      const shortURL = req.params.shortURL;
-      delete urlDatabase[shortURL];
-      res.redirect('/urls');
-    } else {
-      res.status(401).send("You do not have authorization to delete this short URL.");
-    }
-  });
-
-
-app.post("/urls/:id", (req, res) => {
-    const userID = req.session.user_id;
-    const userUrls = urlsForUser(userID, urlDatabase);
-    if (Object.keys(userUrls).includes(req.params.id)) {
-      const shortURL = req.params.id;
-      urlDatabase[shortURL].longURL = req.body.newURL;
-      res.redirect('/urls');
-    } else {
-      res.status(401).send("You do not have authorization to edit this short URL.");
-    }
-  });
+      app.post("/urls/:id", (req, res) => {
+        const userID = req.session.user_id;
+        const userUrls = urlsForUser(userID, urlDatabase);
+        if (Object.keys(userUrls).includes(req.params.id)) {
+          const shortURL = req.params.id;
+          urlDatabase[shortURL].longURL = req.body.newURL;
+          res.redirect('/urls');
+        } else {
+          res.status(401).send("You do not have authorization to edit this short URL.");
+        }
+      });
 
 
 
