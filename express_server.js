@@ -61,15 +61,6 @@ const urlsForUser = function(id, urlDatabase) {
   };
 
 
-
- 
-
-//***********************************************************************************************************/
-                                                   // Express and Routes
-
-
-
-
 app.get("/", (req, res) => {
     if (cookieHasUser(req.session.user_id, users)) {
       res.redirect("/urls");
@@ -135,7 +126,7 @@ app.get("/urls/:shortURL", (req, res) => {
     } else {
       res.status(404).send("The short URL you entered does not correspond with a long URL at this time.");
     }
-  });
+   });
 
 
 app.get("/u/:shortURL", (req, res) => {
@@ -149,11 +140,10 @@ app.get("/u/:shortURL", (req, res) => {
     } else {
       res.status(404).send("The short URL you are trying to access does not correspond with a long URL at this time.");
     }
-  });
+    });
 
 
-
-  app.post("/urls", (req, res) => {
+app.post("/urls", (req, res) => {
     if (req.session.user_id) {
       const shortURL = generateRandomString();
       urlDatabase[shortURL] = {
@@ -164,10 +154,10 @@ app.get("/u/:shortURL", (req, res) => {
     } else {
       res.status(401).send("You must be logged in to a valid account to create short URLs.");
     }
-  });
+    });
 
 
-  app.post("/register", (req, res) => {
+app.post("/register", (req, res) => {
     const newUserID = generateRandomString();
     users[newUserID] = {
       id: newUserID,
@@ -178,18 +168,18 @@ app.get("/u/:shortURL", (req, res) => {
     res.redirect("/urls");
     });
 
-    app.post("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-      res.redirect("/urls");
+app.post("/login", (req, res) => {
+        const email = req.body.email;
+        const password = req.body.password;
+        res.redirect("/urls");
     });
   
-    app.post("/logout", (req, res) => {
+app.post("/logout", (req, res) => {
         req.session = null;
         res.redirect("/login");
       });
 
-    app.post("/urls/:shortURL/delete", (req, res) => {
+app.post("/urls/:shortURL/delete", (req, res) => {
         const userID = req.session.user_id;
         const userUrls = urlsForUser(userID, urlDatabase);
         if (Object.keys(userUrls).includes(req.params.shortURL)) {
@@ -201,7 +191,7 @@ app.get("/u/:shortURL", (req, res) => {
         }
       });
 
-      app.post("/urls/:id", (req, res) => {
+app.post("/urls/:id", (req, res) => {
         const userID = req.session.user_id;
         const userUrls = urlsForUser(userID, urlDatabase);
         if (Object.keys(userUrls).includes(req.params.id)) {
@@ -219,12 +209,6 @@ app.get("/u/:shortURL", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-
-
-
-
-
 
 
 
