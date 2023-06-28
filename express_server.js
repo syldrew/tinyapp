@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = 8080; 
 
-const { generateRandomString, emailHasUser, userIdFromEmail, urlsForUser, cookieHasUser } = require("./helpers");
+const { generateRandomString, getUserByEmail, userIdFromEmail, urlsForUser, cookieHasUser } = require("./helpers");
 
 const urlDatabase = { 
   };
@@ -135,7 +135,7 @@ app.post("/register", (req, res) => {
   
     if (!submittedEmail || !submittedPassword) {
       res.status(400).send("Please include both a valid email and password");
-    } else if (emailHasUser(submittedEmail, users)) {
+    } else if (getUserByEmail(submittedEmail, users)) {
       res.status(400).send("An account already exists for this email address");
     } else {
       const newUserID = generateRandomString();
@@ -154,7 +154,7 @@ app.post("/register", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
   
-    if (!emailHasUser(email, users)) {
+    if (!getUserByEmail(email, users)) {
       res.status(403).send("There is no account associated with this email address");
     } else {
       const userID = userIdFromEmail(email, users);
