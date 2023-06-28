@@ -1,6 +1,6 @@
 
 // Checks if given email corresponds to a user in a given database, returns true or false //
-const emailHasUser = function(email, userDatabase) {
+const getUserByEmail = function(email, userDatabase) {
     for (const user in userDatabase) {
       if (userDatabase[user].email === email) {
         return true;
@@ -47,7 +47,7 @@ const urlsForUser = function(id, urlDatabase) {
 
   module.exports = {
     generateRandomString,
-    emailHasUser,
+    getUserByEmail,
     userIdFromEmail,
     urlsForUser,
     cookieHasUser
