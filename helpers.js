@@ -34,7 +34,7 @@ const cookieHasUser = function(cookie, userDatabase) {
   };
 
 
-  // Returns an object of short URLs specific to the passed in userID//
+  // returns the URLs where the userID is equal to the id of the currently logged-in user.//
 const urlsForUser = function(id, urlDatabase) {
     const userUrls = {};
     for (const shortURL in urlDatabase) {
