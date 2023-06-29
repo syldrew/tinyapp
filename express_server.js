@@ -8,11 +8,9 @@ const PORT = 8080;
 
 const { generateRandomString, getUserByEmail, userIdFromEmail, urlsForUser, cookieHasUser } = require("./helpers");
 
-const urlDatabase = { 
-  };
+const urlDatabase = {};
 
-  const users = {   
-  };
+  const users = {};
   
 
 app.set("view engine", "ejs");
@@ -89,7 +87,7 @@ app.get("/", (req, res) => {
       };
       res.render("urls_show", templateVars);
     } else {
-      res.status(404).send("The short URL you entered does not correspond with a long URL at this time.");
+      res.status(404).send("The short URL you entered does not correspond with a long URL.");
     }
   });
 
@@ -103,17 +101,9 @@ app.get("/", (req, res) => {
         res.redirect(longURL);
       }
     } else {
-      res.status(404).send("The short URL you are trying to access does not correspond with a long URL at this time.");
+      res.status(404).send("The short URL you are trying to access does not correspond with a long URL");
     }
   });
-
-
-
-
-
-
-
-
 
 app.post("/urls", (req, res) => {
   if (req.session.user_id) {
