@@ -1,18 +1,19 @@
+// Requiring dependencies
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 
 const app = express();
-const PORT = 8080; 
+const PORT = 8080;  // default port 8080
 
 const { generateRandomString, getUserByEmail, userIdFromEmail, urlsForUser, cookieHasUser } = require("./helpers");
 
+/* --- Database --- */
 const urlDatabase = {};
-
-  const users = {};
+const users = {};
   
-
+// Setting the view engine and the use of body-parser and cookie-session
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -22,6 +23,8 @@ app.use(cookieSession({
   secret: 'secret'
 }));
 
+
+// GET routes
 
 app.get("/", (req, res) => {
     if (cookieHasUser(req.session.user_id, users)) {
@@ -105,6 +108,8 @@ app.get("/", (req, res) => {
     }
   });
 
+  // POST routes
+
 app.post("/urls", (req, res) => {
   if (req.session.user_id) {
     const shortURL = generateRandomString();
@@ -187,7 +192,8 @@ app.post("/urls/:id", (req, res) => {
     }
   });
   
-
+  
+// Server listening at PORT
   app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}!`);
   });
