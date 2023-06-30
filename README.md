@@ -4,7 +4,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 # Purpose of this Project
 
-    Build a simple multipage app:
+Build a simple multipage app:
 
 - with authentication protection
 - that reacts appropriately to the user's logged-in state,
