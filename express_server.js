@@ -47,6 +47,11 @@ app.use(cookieSession({
 
 // GET routes
 
+app.get("/urls.json", (req, res) => {
+    // Return the URL database as JSON
+    res.json(urlDatabase);
+  });
+
 app.get("/", (req, res) => {
     if (cookieHasUser(req.session.user_id, users)) {
       res.redirect("/urls");
@@ -54,8 +59,7 @@ app.get("/", (req, res) => {
       res.redirect("/login");
     }
   });
-  
-  
+    
   app.get("/urls", (req, res) => {
     let templateVars = {
       urls: urlsForUser(req.session.user_id, urlDatabase),
@@ -129,6 +133,20 @@ app.get("/", (req, res) => {
     }
   });
 
+app.get("/urls/:id", (req, res) => {
+    if (urlDatabase[req.params.id].userID !== req.session.user_id) {
+      return res.status(403).send("This URL is not yours!");
+    }
+    const templateVars = {
+      user: users[req.session.user_id],
+      id: req.params.id,
+      longURL: urlDatabase[req.params.id].longURL,
+      userID: urlDatabase[req.params.id].userID,
+      urls: urlDatabase,
+    };
+    res.render("urls_show", templateVars);
+  });
+
   // POST routes
 
 app.post("/urls", (req, res) => {
@@ -200,6 +218,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     res.status(401).send("You do not have authorization to delete this short URL.");
   }
 });
+
 
 app.post("/urls/:id", (req, res) => {
     const userID = req.session.user_id;
