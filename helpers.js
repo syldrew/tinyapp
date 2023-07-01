@@ -3,10 +3,10 @@
 const getUserByEmail = function(email, userDatabase) {
     for (const user in userDatabase) {
       if (userDatabase[user].email === email) {
-        return true;
+        return userDatabase[user];
       }
     }
-    return false;
+    return undefined;
   };
 
   //Takes an email and userDatabase and returns the user ID for the user with the given email address //
@@ -19,9 +19,15 @@ const userIdFromEmail = function(email, userDatabase) {
   };
 
 // Generates a random string, used for creating short URLs and userIDs//
- function generateRandomString(length) {
-    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
-}
+function generateRandomString() {
+    let genRes = '';
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charsLength = chars.length;
+    for (let i = 0; i < 6; i++) {
+      genRes += chars.charAt(Math.floor(Math.random() * charsLength));
+    }
+    return genRes;
+  };
 
 
 //Checks if current cookie corresponds with a user in the userDatabase//
