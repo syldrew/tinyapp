@@ -1,15 +1,13 @@
 // Requiring dependencies
 const express = require("express");
-//const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 
 const app = express();
-const PORT = 8080;  // default port 8080
+const PORT = 8080;  
 
 const { generateRandomString, getUserByEmail, userIdFromEmail, urlsForUser, cookieHasUser } = require("./helpers");
 
-/* --- Database --- */
 const urlDatabase = {
     "b2xVn2": {
         longUrl: "http://www.lighthouselabs.ca",
@@ -33,8 +31,6 @@ const urlDatabase = {
     },
   };
   
-  
-// Setting the view engine and the use of body-parser and cookie-session
 app.set("view engine", "ejs");
 
 app.use(express.urlencoded({extended: true}));
@@ -44,13 +40,9 @@ app.use(cookieSession({
   secret: 'secret'
 }));
 
-
-// GET routes
-
 app.get("/urls.json", (req, res) => {
-    // Return the URL database as JSON
     res.json(urlDatabase);
-  });
+});
 
 app.get("/", (req, res) => {
     if (cookieHasUser(req.session.user_id, users)) {
@@ -58,18 +50,23 @@ app.get("/", (req, res) => {
     } else {
       res.redirect("/login");
     }
-  });
-    
-  app.get("/urls", (req, res) => {
-    let templateVars = {
-      urls: urlsForUser(req.session.user_id, urlDatabase),
-      user: users[req.session.user_id],
+});
+
+
+app.get("/urls", (req, res) => {
+    const userId = req.session.user_id;
+    if (!userId) {
+      return res.status(401).send("You must be logged in to view this page.");
+    }
+    const userURL = urlsForUser(userId, urlDatabase);
+    const templateVars = {
+      user: users[userId],
+      urls: userURL,
     };
     res.render("urls_index", templateVars);
-  });
-
-
-  app.get("/urls/new", (req, res) => {
+});
+    
+app.get("/urls/new", (req, res) => {
     if (!cookieHasUser(req.session.user_id, users)) {
       res.redirect("/login");
     } else {
@@ -78,10 +75,10 @@ app.get("/", (req, res) => {
       };
       res.render("urls_new", templateVars);
     }
-  });
+});
 
 
-  app.get("/register", (req, res) => {
+app.get("/register", (req, res) => {
     if (cookieHasUser(req.session.user_id, users)) {
       res.redirect("/urls");
     } else {
@@ -90,10 +87,10 @@ app.get("/", (req, res) => {
       };
       res.render("urls_registration", templateVars);
     }
-  });
+});
 
 
-  app.get("/login", (req, res) => {
+app.get("/login", (req, res) => {
     if (cookieHasUser(req.session.user_id, users)) {
       res.redirect("/urls");
     } else {
@@ -102,10 +99,9 @@ app.get("/", (req, res) => {
       };
       res.render("urls_login", templateVars);
     }
-  });
+});
 
-  
-  app.get("/urls/:shortURL", (req, res) => {
+app.get("/urls/:shortURL", (req, res) => {
     if (urlDatabase[req.params.shortURL]) {
       let templateVars = {
         shortURL: req.params.shortURL,
@@ -117,10 +113,9 @@ app.get("/", (req, res) => {
     } else {
       res.status(404).send("The short URL you entered does not correspond with a long URL.");
     }
-  });
+});
 
-
-  app.get("/u/:shortURL", (req, res) => {
+app.get("/u/:shortURL", (req, res) => {
     if (urlDatabase[req.params.shortURL]) {
       const longURL = urlDatabase[req.params.shortURL].longURL;
       if (longURL === undefined) {
@@ -131,11 +126,11 @@ app.get("/", (req, res) => {
     } else {
       res.status(404).send("The short URL you are trying to access does not correspond with a long URL");
     }
-  });
+});
 
 app.get("/urls/:id", (req, res) => {
     if (urlDatabase[req.params.id].userID !== req.session.user_id) {
-      return res.status(403).send("This URL is not yours!");
+      return res.status(403).send("This URL does not belong to this user!");
     }
     const templateVars = {
       user: users[req.session.user_id],
@@ -145,9 +140,7 @@ app.get("/urls/:id", (req, res) => {
       urls: urlDatabase,
     };
     res.render("urls_show", templateVars);
-  });
-
-  // POST routes
+});
 
 app.post("/urls", (req, res) => {
   if (req.session.user_id) {
@@ -161,7 +154,6 @@ app.post("/urls", (req, res) => {
     res.status(401).send("You must be logged in to a valid account to create short URLs.");
   }
 });
-
 
 app.post("/register", (req, res) => {
     const submittedEmail = req.body.email;
@@ -181,10 +173,9 @@ app.post("/register", (req, res) => {
       req.session.user_id = newUserID;
       res.redirect("/urls");
     }
-  });
+});
   
-
-  app.post("/login", (req, res) => {
+app.post("/login", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
   
@@ -199,13 +190,12 @@ app.post("/register", (req, res) => {
         res.redirect("/urls");
       }
     }
-  });
+});
   
-  app.post("/logout", (req, res) => {
+app.post("/logout", (req, res) => {
     req.session = null;
-    res.redirect('/urls');
-  });
-
+    res.redirect("/login");
+});
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const userID = req.session.user_id;
@@ -219,7 +209,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   }
 });
 
-
 app.post("/urls/:id", (req, res) => {
     const userID = req.session.user_id;
     const userUrls = urlsForUser(userID, urlDatabase);
@@ -230,13 +219,11 @@ app.post("/urls/:id", (req, res) => {
     } else {
       res.status(401).send("You do not have authorization to edit this short URL.");
     }
-  });
+});
   
-  
-// Server listening at PORT
-  app.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}!`);
-  });
+});
 
 
 
