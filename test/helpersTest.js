@@ -30,20 +30,18 @@ const testUrlDatabase = {
     }
   };
 
-describe('getUserByEmail', function() {
-  
-    it('should return true if email corresponds to a user in the database', function() {
-      const existingEmail = getUserByEmail("user@example.com", testUsers);
-      const expectedOutput = true;
-      assert.equal(existingEmail, expectedOutput);
+ describe('getUserByEmail', function() {
+    it('should return a user with valid email', function() {
+      const user = getUserByEmail("user@example.com", testUsers);
+      const expectedUserID = "userRandomID";
+      assert.deepEqual(user.id, expectedUserID);
     });
-  
-    it('should return false if email does not correspond to a user in the database', function() {
-      const nonExistantEmail = getUserByEmail("fake_email@test.com", testUsers);
-      const expectedOutput = false;
-      assert.equal(nonExistantEmail, expectedOutput);
+    it('should return undefined for a non-existent email', function() {
+      const user = getUserByEmail("nonexistent@example.com", testUsers);
+      assert.isUndefined(user);
     });
   });
+
 
   describe('urlsForUser', function() {
 
