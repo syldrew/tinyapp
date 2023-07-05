@@ -1,5 +1,6 @@
 // Requiring dependencies
 const express = require("express");
+
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 
@@ -52,12 +53,17 @@ app.get("/", (req, res) => {
     }
 });
 
-
 app.get("/urls", (req, res) => {
     const userId = req.session.user_id;
-    if (!userId) {
-      return res.status(401).send("You must be logged in to view this page.");
-    }
+    if (!users[userId]) {
+        res.status(403);
+        res.render("ErrorHandelerPage", {
+          status: 403,
+          message: "Please Register or Login to view URLs",
+          redirectLink: "/login"
+        });
+        return;
+      }
     const userURL = urlsForUser(userId, urlDatabase);
     const templateVars = {
       user: users[userId],
@@ -129,6 +135,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  
     if (urlDatabase[req.params.id].userID !== req.session.user_id) {
       return res.status(403).send("This URL does not belong to this user!");
     }
@@ -141,6 +148,7 @@ app.get("/urls/:id", (req, res) => {
     };
     res.render("urls_show", templateVars);
 });
+
 
 app.post("/urls", (req, res) => {
   if (req.session.user_id) {
