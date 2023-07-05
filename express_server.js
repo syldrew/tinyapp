@@ -217,17 +217,39 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   }
 });
 
+// app.post("/urls/:id", (req, res) => {
+//     const userID = req.session.user_id;
+//     const userUrls = urlsForUser(userID, urlDatabase);
+//     if (Object.keys(userUrls).includes(req.params.id)) {
+//       const shortURL = req.params.id;
+//       urlDatabase[shortURL].longURL = req.body.newURL;
+//       res.redirect('/urls');
+//     } else {
+//       res.status(401).send("You do not have authorization to edit this short URL.");
+//     }
+// });
 app.post("/urls/:id", (req, res) => {
+    const shortURL = req.params.id;
+    const longURL = req.body.longURL;
     const userID = req.session.user_id;
-    const userUrls = urlsForUser(userID, urlDatabase);
-    if (Object.keys(userUrls).includes(req.params.id)) {
-      const shortURL = req.params.id;
-      urlDatabase[shortURL].longURL = req.body.newURL;
-      res.redirect('/urls');
-    } else {
-      res.status(401).send("You do not have authorization to edit this short URL.");
+    if (!userID) {
+      // Return an error if the user is not logged in
+      return res.status(401).send("Login to perform this action!");
     }
-});
+    if (!urlDatabase.hasOwnProperty(shortURL)) {
+      // Return an error if the shortURL is not found in the urlDatabase
+      return res.status(404).send("The URL does not exist!");
+    }
+  
+    const url = urlDatabase[shortURL];
+    if (url.userID !== userID) {
+      // Return an error if the user doesn't have permission to edit the URL
+      res.status(403).send("No permission to edit this URL");
+    }
+    urlDatabase[shortURL].longURL = longURL;
+    res.redirect("/urls");
+  });
+
   
 app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}!`);
