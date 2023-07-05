@@ -16,12 +16,12 @@
         <div class="card-body">
             <% if (!user) { %>
               <div class="alert alert-warning" role="alert">
-                This info does not  belong to this user
+                This url does not  belong to this user
                   Please <a href="/login" class="alert-link">login</a> or <a href="/register" class="alert-link">register</a> 
               </div>
             <% } else if (user.id !== urlUserID) { %>
               <div class="alert alert-warning" role="alert">
-                  This info does not  belong to this user
+                  This url does not  belong to this user
               </div>
             <% } %>
           <h5 class="card-title">TinyURL for: <%= longURL %></h5>
