@@ -1,4 +1,3 @@
-// Requiring dependencies
 const express = require("express");
 
 const cookieSession = require('cookie-session');
@@ -109,16 +108,31 @@ app.get("/login", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
     if (urlDatabase[req.params.shortURL]) {
-      let templateVars = {
+      const templateVars = {
         shortURL: req.params.shortURL,
         longURL: urlDatabase[req.params.shortURL].longURL,
         urlUserID: urlDatabase[req.params.shortURL].userID,
         user: users[req.session.user_id],
       };
-      res.render("urls_show", templateVars);
+      res.render("urls_show", templateVars); 
     } else {
       res.status(404).send("The short URL you entered does not correspond with a long URL.");
     }
+});
+
+app.get("/urls/:id", (req, res) => {
+  
+    if (urlDatabase[req.params.id].userID !== req.session.user_id) {
+      return res.status(403).send("This URL does not belong to this user");
+     }
+    const templateVars = {
+      user: users[req.session.user_id],
+      id: req.params.id,
+      longURL: urlDatabase[req.params.id].longURL,
+      userID: urlDatabase[req.params.id].userID,
+      urls: urlDatabase,
+    };
+    res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -132,21 +146,6 @@ app.get("/u/:shortURL", (req, res) => {
     } else {
       res.status(404).send("The short URL you are trying to access does not correspond with a long URL");
     }
-});
-
-app.get("/urls/:id", (req, res) => {
-  
-    if (urlDatabase[req.params.id].userID !== req.session.user_id) {
-      return res.status(403).send("This URL does not belong to this user!");
-    }
-    const templateVars = {
-      user: users[req.session.user_id],
-      id: req.params.id,
-      longURL: urlDatabase[req.params.id].longURL,
-      userID: urlDatabase[req.params.id].userID,
-      urls: urlDatabase,
-    };
-    res.render("urls_show", templateVars);
 });
 
 
@@ -231,7 +230,7 @@ app.post("/urls/:id", (req, res) => {
     if (url.userID !== userID) { 
       res.status(403).send("No permission to edit this URL");
     }
-    urlDatabase[shortURL].longURL = longURL;
+    urlDatabase[shortURL].longURL = req.body.newURL; 
     res.redirect("/urls");
   });
   
